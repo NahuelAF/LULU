@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para Ti Lulu ✿</title>
+
+  <!-- SEO básico -->
+  <meta name="author" content="Hecho con amor" />
+  <meta name="description" content="Una página de amor con rosas animadas, constelación de Géminis y música. Hecha con todo el corazón, para ti." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#05030f" />
+
+  <!-- Open Graph (WhatsApp, Instagram, Facebook, iMessage) -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="Para Ti ✿ — Un regalo especial" />
+  <meta property="og:description" content="Abrí esto, hay algo especial esperándote 🌹✨" />
+  <meta property="og:locale"      content="es_AR" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card"        content="summary" />
+  <meta name="twitter:title"       content="Para Ti ✿" />
+  <meta name="twitter:description" content="Abrí esto, hay algo especial esperándote 🌹✨" />
+
+  <!-- Apple / iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Para Ti ✿" />
+
+  <!-- Rendimiento de fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --rose-deep: #8b1a4a;
+      --rose-mid:  #c0396e;
+      --rose-light:#e8789a;
+      --rose-blush:#f7c5d5;
+      --petal-cream:#fff0f5;
+      --gold: #d4a853;
+      --sky-dark: #05030f;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { width:100%; height:100%; overflow:hidden; background:var(--sky-dark); }
+
+    #starCanvas { position:fixed; inset:0; z-index:0; }
+
+    #nebula {
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background:
+        radial-gradient(ellipse 70% 45% at 25% 20%, rgba(139,26,74,0.13) 0%, transparent 70%),
+        radial-gradient(ellipse 55% 65% at 75% 75%, rgba(26,10,46,0.28) 0%, transparent 70%),
+        radial-gradient(ellipse 90% 55% at 50% 95%, rgba(192,57,110,0.09) 0%, transparent 60%);
+    }
+
+    #scene { position:fixed; inset:0; z-index:1; pointer-events:none; }
+
+    .flower-wrap {
+      position:absolute; bottom:0;
+      transform-origin: bottom center;
+      transform: scaleY(0); opacity:0;
+    }
+    .flower-wrap.bloom {
+      animation:
+        growStem var(--gd,1.6s) cubic-bezier(.22,1,.36,1) var(--gl,0s) forwards,
+        sway     var(--sd,4s)   ease-in-out               var(--ss,2s) infinite;
+    }
+    @keyframes growStem {
+      0%  { transform:scaleY(0); opacity:0; }
+      25% { opacity:1; }
+      100%{ transform:scaleY(1); opacity:1; }
+    }
+    @keyframes sway {
+      0%,100%{ transform:scaleY(1) rotate(var(--sb,0deg)); }
+      50%    { transform:scaleY(1) rotate(var(--sp,3deg)); }
+    }
+    .petal-group {
+      transform-origin: center 55%;
+      transform:scale(0) rotate(-20deg);
+    }
+    .flower-wrap.bloom .petal-group {
+      animation: openPetal .75s cubic-bezier(.34,1.56,.64,1) var(--pd,1.5s) both;
+    }
+    @keyframes openPetal {
+      from{ transform:scale(0) rotate(-20deg); }
+      to  { transform:scale(1) rotate(0deg);   }
+    }
+
+    #message {
+      position:fixed; inset:0; z-index:10;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      text-align:center; padding:1.5rem 2rem;
+      pointer-events:none;
+    }
+    .msg-inner {
+      opacity:0; transform:translateY(24px);
+      animation: fadeUp 2.2s ease forwards 3.4s;
+    }
+    @keyframes fadeUp { to{ opacity:1; transform:translateY(0); } }
+
+    .msg-eyebrow {
+      font-family:'Cormorant Garamond', serif;
+      font-style:italic; font-weight:300;
+      font-size:clamp(.78rem,3.2vw,.95rem);
+      color:var(--rose-blush);
+      letter-spacing:.3em; text-transform:uppercase;
+      margin-bottom:.5rem; opacity:.7;
+    }
+    .msg-title {
+      font-family:'Pinyon Script', cursive;
+      font-size:clamp(3rem,15vw,6rem);
+      color:#fff;
+      text-shadow:
+        0 0 50px rgba(232,120,154,.95),
+        0 0 100px rgba(192,57,110,.5),
+        0 0 5px #fff;
+      line-height:1; margin-bottom:1.1rem;
+    }
+    .msg-body {
+      font-family:'Italiana', serif;
+      font-size:clamp(1.05rem,4.8vw,1.4rem);
+      color:var(--petal-cream);
+      line-height:1.85; max-width:295px;
+      text-shadow: 0 1px 12px rgba(139,26,74,.8);
+    }
+
+    #startBtn {
+      position:fixed; inset:0; z-index:99;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      background:radial-gradient(ellipse at center,#1a0a2e 0%,#05030f 100%);
+      cursor:pointer; transition:opacity .9s ease;
+      gap:.8rem;
+    }
+    #startBtn.hidden { opacity:0; pointer-events:none; }
+    .btn-label {
+      font-family:'Pinyon Script', cursive;
+      font-size:clamp(2.4rem,11vw,4rem);
+      color:var(--rose-light);
+      text-shadow:0 0 35px rgba(232,120,154,.85);
+      animation:pulse 2.2s ease-in-out infinite;
+    }
+    .btn-hint {
+      font-family:'Cormorant Garamond', serif; font-style:italic;
+      color:var(--rose-blush); font-size:clamp(.8rem,3.5vw,.95rem);
+      letter-spacing:.2em; opacity:.55;
+    }
+    @keyframes pulse {
+      0%,100%{ opacity:.72; transform:scale(1); }
+      50%    { opacity:1;   transform:scale(1.045); }
+    }
+
+    .sparkle {
+      position:fixed; border-radius:50%;
+      pointer-events:none; z-index:5;
+      animation:sparkleAnim var(--sd2,2s) ease-out var(--sdel,0s) infinite;
+    }
+    @keyframes sparkleAnim {
+      0%  { opacity:0; transform:scale(0) translateY(0); }
+      30% { opacity:1; }
+      100%{ opacity:0; transform:scale(1.3) translateY(-45px); }
+    }
+
+    #gemLabel {
+      position:fixed; z-index:6;
+      font-family:'Cormorant Garamond', serif;
+      font-style:italic; font-size:.72rem;
+      color:rgba(212,168,83,.6);
+      letter-spacing:.14em;
+      pointer-events:none;
+      opacity:0; transition:opacity 1.2s ease 2.5s;
+    }
+    #gemLabel.show { opacity:1; }
+  </style>
+</head>
+<body>
+
+<div id="startBtn">
+  <div class="btn-label">Toca para abrir ✿</div>
+  <div class="btn-hint">un regalo especial te espera</div>
+</div>
+
+<canvas id="starCanvas"></canvas>
+<div id="nebula"></div>
+<div id="scene"></div>
+<div id="gemLabel"></div>
+
+<div id="message">
+  <div class="msg-inner">
+    <div class="msg-eyebrow">siempre contigo</div>
+    <div class="msg-title">Te Amo</div>
+    <div class="msg-body">
+      Tu sonrisa es el instante en que todo se ilumina<br>
+      y tus besos tienen la respuesta que nunca supe formular.<br>
+      <br><br>
+      Eres mi lugar favorito<br>
+      en el universo entero.
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CANVAS — ESTRELLAS + GÉMINIS
+// ══════════════════════════════════════════
+const canvas = document.getElementById('starCanvas');
+const ctx    = canvas.getContext('2d');
+let stars = [], W, H, t = 0;
+
+// ── Nodos de Géminis (forma según imagen de referencia) ──
+const GEM_NODES = [
+  {x:.30,y:.35,r:2.2}, // 0
+  {x:.34,y:.33,r:2.0}, // 1
+  {x:.38,y:.35,r:2.0}, // 2
+  {x:.42,y:.30,r:2.2}, // 3
+  {x:.47,y:.25,r:2.6}, // 4 cima
+  {x:.50,y:.35,r:2.1}, // 5 centro
+  {x:.58,y:.38,r:2.2}, // 6
+  {x:.65,y:.38,r:2.0}, // 7
+  {x:.70,y:.36,r:2.3}, // 8 extremo der
+  {x:.55,y:.48,r:2.1}, // 9
+  {x:.48,y:.55,r:2.0}, // 10
+  {x:.42,y:.60,r:2.1}, // 11
+  {x:.38,y:.52,r:2.0}, // 12
+  {x:.35,y:.45,r:2.1}, // 13
+  {x:.33,y:.40,r:1.9}, // 14
+];
+
+const GEM_EDGES = [
+  [0,1],[1,2],[2,3],[3,4],     // brazo superior
+  [3,5],                        // al centro
+  [5,6],[6,7],[7,8],            // brazo derecho
+  [5,9],[9,10],[10,11],         // pierna der
+  [5,12],[12,13],[13,14],[14,0] // pierna izq → cierre
+];
+
+let gemPx = [], gemLines = [];
+
+// ── Estado de animación de trazado ──
+// Usamos un tiempo propio, independiente de `t`, que arranca en 0
+// al momento del click y avanza de forma determinista.
+let drawTime = -1;          // -1 = no arrancó todavía
+const DRAW_SPEED = 0.08;    // líneas por segundo
+const TOTAL_LINES = GEM_EDGES.length;
+
+// Chispitas que viajan con la punta del trazo
+const trailParticles = [];
+
+// ══════════════════════════════════════════
+function resize(){
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  buildGemini();
+  buildBgStars();
+}
+
+function buildGemini(){
+  const isMobile = W < 700;
+  // Los nodos X van de 0.30 a 0.70 (span 0.40 del total)
+  // Los nodos Y van de 0.25 a 0.60 (span 0.35 del total)
+  // Multiplicamos inversamente para que ese span ocupe casi toda la pantalla:
+  //   span_x * sx = W_deseado  =>  sx = W_deseado / 0.40
+  //   span_y * sy = H_deseado  =>  sy = H_deseado / 0.35
+  const targetW = isMobile ? W * 0.92 : W * 0.84;
+  const targetH = isMobile ? H * 0.62 : H * 0.68;
+  const sx = targetW / 0.40;
+  const sy = targetH / 0.35;
+  // Offset para centrar la figura en pantalla
+  // Centro de la figura en nodos: x=0.50, y=0.425
+  const ox = W * 0.5 - 0.50 * sx;
+  const oy = isMobile ? H * -0.15 : H * -0.3;
+
+  gemPx = GEM_NODES.map(s => ({
+    ...s,
+    px: ox + s.x * sx,
+    py: oy + s.y * sy,
+    phase: Math.random() * Math.PI * 2,
+    speed: .003 + Math.random() * .004,
+  }));
+
+  gemLines = GEM_EDGES.map(([a,b]) => ({
+    x1: gemPx[a].px, y1: gemPx[a].py,
+    x2: gemPx[b].px, y2: gemPx[b].py,
+  }));
+
+  const lbl = document.getElementById('gemLabel');
+  lbl.style.left = (gemPx[4].px - 20) + 'px';
+  lbl.style.top  = (gemPx[4].py - 28) + 'px';
+}
+
+function buildBgStars(){
+  stars = [];
+  const n = Math.floor(W * H / 2600);
+  for(let i = 0; i < n; i++) stars.push({
+    x: Math.random()*W, y: Math.random()*H,
+    r: Math.random()*1.4+.18, a: Math.random()*.7+.3,
+    speed: Math.random()*.007+.003, phase: Math.random()*Math.PI*2,
+  });
+}
+
+// ══════════════════════════════════════════
+// CHISPITAS DEL TRAZO
+// ══════════════════════════════════════════
+function spawnTrailSparks(x, y){
+  const count = 3 + Math.floor(Math.random() * 3);
+  for(let i = 0; i < count; i++){
+    trailParticles.push({
+      x, y,
+      vx: (Math.random() - .5) * 2.2,
+      vy: (Math.random() - .5) * 2.2 - .8,
+      life: 1,
+      decay: .055 + Math.random() * .06,
+      r: .8 + Math.random() * 1.4,
+      gold: Math.random() > .4,
+    });
+  }
+}
+
+function updateAndDrawSparks(){
+  for(let i = trailParticles.length - 1; i >= 0; i--){
+    const p = trailParticles[i];
+    p.x  += p.vx;
+    p.y  += p.vy;
+    p.vy += .06; // gravedad leve
+    p.life -= p.decay;
+    if(p.life <= 0){ trailParticles.splice(i,1); continue; }
+    const col = p.gold
+      ? `rgba(255,220,100,${p.life * .9})`
+      : `rgba(255,200,220,${p.life * .85})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI*2);
+    ctx.fillStyle = col;
+    ctx.fill();
+  }
+}
+
+// ══════════════════════════════════════════
+// LOOP DE DIBUJO
+// ══════════════════════════════════════════
+let lastTimestamp = null;
+
+function drawFrame(timestamp){
+  const dt = lastTimestamp ? (timestamp - lastTimestamp) / 1000 : 0.016;
+  lastTimestamp = timestamp;
+
+  // avanzar drawTime solo cuando está activo
+  if(drawTime >= 0 && drawTime < TOTAL_LINES) drawTime += dt * DRAW_SPEED * TOTAL_LINES;
+
+  ctx.clearRect(0,0,W,H);
+
+  // fondo
+  const bg = ctx.createRadialGradient(W*.5, H*.28, 0, W*.5, H*.5, Math.max(W,H)*.9);
+  bg.addColorStop(0,  '#0d0820');
+  bg.addColorStop(.55,'#060410');
+  bg.addColorStop(1,  '#02010a');
+  ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+
+  t += dt;
+
+  // estrellas de fondo
+  stars.forEach(s => {
+    const tw = .35 + .65*(.5 + .5*Math.sin(t*s.speed*60 + s.phase));
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(255,240,220,${s.a*tw})`; ctx.fill();
+  });
+
+  if(drawTime < 0){
+    requestAnimationFrame(drawFrame);
+    return; // antes del click no dibujamos constelación
+  }
+
+  // ── Líneas de Géminis — trazado progresivo ──
+  const lp = .25 + .10*Math.sin(t*.4);
+  ctx.strokeStyle = `rgba(212,168,83,${lp})`;
+  ctx.lineWidth = 1.15;
+
+  let tipX = null, tipY = null; // punta activa del trazo
+
+  gemLines.forEach((l, i) => {
+    const progress = Math.min(1, Math.max(0, drawTime - i));
+    if(progress <= 0) return;
+
+    const ex = l.x1 + (l.x2 - l.x1) * progress;
+    const ey = l.y1 + (l.y2 - l.y1) * progress;
+
+    ctx.beginPath();
+    ctx.moveTo(l.x1, l.y1);
+    ctx.lineTo(ex, ey);
+    ctx.stroke();
+
+    // la punta es la línea que está dibujándose ahora (progress < 1)
+    if(progress < 1){ tipX = ex; tipY = ey; }
+  });
+
+  // emitir chispitas desde la punta activa
+  if(tipX !== null && drawTime < TOTAL_LINES){
+    if(Math.random() < .6) spawnTrailSparks(tipX, tipY);
+    // destello en la punta
+    const grd = ctx.createRadialGradient(tipX, tipY, 0, tipX, tipY, 8);
+    grd.addColorStop(0, 'rgba(255,240,160,.9)');
+    grd.addColorStop(1, 'rgba(255,200,80,0)');
+    ctx.beginPath(); ctx.arc(tipX, tipY, 8, 0, Math.PI*2);
+    ctx.fillStyle = grd; ctx.fill();
+  }
+
+  // actualizar y dibujar chispitas
+  updateAndDrawSparks();
+
+  // ── Estrellas de Géminis ──
+  // Se revelan progresivamente: la estrella i aparece cuando drawTime supera su primer edge
+  // Calculamos qué nodos ya están "alcanzados"
+  const reachedNodes = new Set();
+  gemLines.forEach((l, i) => {
+    const [a, b] = GEM_EDGES[i];
+    const progress = Math.min(1, Math.max(0, drawTime - i));
+    if(progress > 0)  reachedNodes.add(a);
+    if(progress >= 1) reachedNodes.add(b);
+  });
+
+  gemPx.forEach((s, i) => {
+    if(!reachedNodes.has(i)) return;
+    const tw = .65 + .35*(.5 + .5*Math.sin(t*s.speed*60 + s.phase));
+    const glow = s.r * 6;
+    const grd = ctx.createRadialGradient(s.px, s.py, 0, s.px, s.py, glow);
+    grd.addColorStop(0,  `rgba(255,232,190,${.55*tw})`);
+    grd.addColorStop(.4, `rgba(232,168,83,${.22*tw})`);
+    grd.addColorStop(1,  'rgba(255,210,120,0)');
+    ctx.beginPath(); ctx.arc(s.px, s.py, glow, 0, Math.PI*2);
+    ctx.fillStyle = grd; ctx.fill();
+    ctx.beginPath(); ctx.arc(s.px, s.py, s.r*tw, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(255,248,230,${.9*tw})`; ctx.fill();
+    if(s.r >= 2.4){
+      ctx.strokeStyle = `rgba(255,240,200,${.30*tw})`;
+      ctx.lineWidth = .8;
+      const len = s.r * 8;
+      ctx.beginPath(); ctx.moveTo(s.px-len, s.py); ctx.lineTo(s.px+len, s.py); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s.px, s.py-len); ctx.lineTo(s.px, s.py+len); ctx.stroke();
+    }
+  });
+
+  requestAnimationFrame(drawFrame);
+}
+
+// ══════════════════════════════════════════
+// FLORES
+// ══════════════════════════════════════════
+const flowerDefs = [
+  { xp:.50, sc:1,    dl:0,    sb:'0deg',    sp:'2deg',    gd:1.9, sd:5.2 },
+  { xp:.27, sc:.88,  dl:.28,  sb:'-1deg',   sp:'-3deg',   gd:1.7, sd:4.6 },
+  { xp:.73, sc:.88,  dl:.36,  sb:'1deg',    sp:'3deg',    gd:1.7, sd:4.8 },
+  { xp:.11, sc:.73,  dl:.55,  sb:'-2deg',   sp:'-4.5deg', gd:1.5, sd:4.0 },
+  { xp:.39, sc:.73,  dl:.52,  sb:'-1deg',   sp:'-3.5deg', gd:1.5, sd:4.3 },
+  { xp:.61, sc:.73,  dl:.62,  sb:'1deg',    sp:'3.5deg',  gd:1.5, sd:4.4 },
+  { xp:.89, sc:.73,  dl:.68,  sb:'2deg',    sp:'4.5deg',  gd:1.5, sd:4.1 },
+  { xp:.03, sc:.53,  dl:.90,  sb:'-3deg',   sp:'-6deg',   gd:1.3, sd:3.7 },
+  { xp:.21, sc:.55,  dl:.95,  sb:'-2deg',   sp:'-5deg',   gd:1.3, sd:3.5 },
+  { xp:.79, sc:.55,  dl:1.02, sb:'2deg',    sp:'5deg',    gd:1.3, sd:3.6 },
+  { xp:.97, sc:.53,  dl:1.08, sb:'3deg',    sp:'6deg',    gd:1.3, sd:3.8 },
+];
+
+const roseColors = [
+  {outer:'#c0396e',inner:'#8b1a4a',center:'#ffd6e7',leaf:'#2d6a2d',leafD:'#1e4d1e'},
+  {outer:'#e8789a',inner:'#c0396e',center:'#fff0f5',leaf:'#3a7a3a',leafD:'#235023'},
+  {outer:'#a02558',inner:'#6b1338',center:'#f9d0e0',leaf:'#255225',leafD:'#183818'},
+  {outer:'#d44b7e',inner:'#9b2052',center:'#ffe4ef',leaf:'#2f6e2f',leafD:'#1d4d1d'},
+];
+
+function buildRose(ci, stemH){
+  const c = roseColors[ci % roseColors.length];
+  const W2=130, H2=stemH+150, cx=65, cy=94;
+  const petals = Array.from({length:8},(_,i)=>{
+    const r = (i*45*Math.PI)/180;
+    const px=cx+Math.cos(r)*20, py=cy+Math.sin(r)*15;
+    return `<ellipse cx="${px}" cy="${py}" rx="29" ry="21"
+      fill="${c.outer}" transform="rotate(${i*45},${px},${py})" opacity=".91"/>`;
+  }).join('');
+  return `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W2} ${H2}" width="${W2}" height="${H2}">
+<defs>
+  <radialGradient id="rg${ci}" cx="50%" cy="35%">
+    <stop offset="0%" stop-color="${c.center}" stop-opacity=".65"/>
+    <stop offset="100%" stop-color="${c.outer}" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="gf${ci}">
+    <feGaussianBlur stdDeviation="3.5" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+<path d="M${cx},${H2} Q${cx-10},${H2-stemH*.55} ${cx+2},${H2-stemH}"
+      stroke="${c.leaf}" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+<ellipse cx="${cx-26}" cy="${H2-stemH*.38}" rx="20" ry="9"
+  fill="${c.leaf}" transform="rotate(-38,${cx-26},${H2-stemH*.38})" opacity=".88"/>
+<ellipse cx="${cx+25}" cy="${H2-stemH*.60}" rx="18" ry="8"
+  fill="${c.leaf}" transform="rotate(38,${cx+25},${H2-stemH*.60})" opacity=".85"/>
+<ellipse cx="${cx-18}" cy="${H2-stemH*.73}" rx="13" ry="6"
+  fill="${c.leafD}" transform="rotate(-28,${cx-18},${H2-stemH*.73})" opacity=".7"/>
+<g class="petal-group" style="transform-origin:${cx}px ${cy}px">
+  ${petals}
+  <ellipse cx="${cx}" cy="${cy}"   rx="23" ry="19" fill="${c.outer}"/>
+  <ellipse cx="${cx}" cy="${cy-3}" rx="17" ry="14" fill="${c.inner}" opacity=".88"/>
+  <ellipse cx="${cx}" cy="${cy-5}" rx="11" ry="9"  fill="${c.inner}" opacity=".75"/>
+  <circle cx="${cx}" cy="${cy}" r="11" fill="${c.center}" filter="url(#gf${ci})"/>
+  <circle cx="${cx}" cy="${cy}" r="5.5" fill="#fff" opacity=".75"/>
+  <ellipse cx="${cx}" cy="${cy}" rx="26" ry="21" fill="url(#rg${ci})"/>
+</g>
+</svg>`;
+}
+
+// ══════════════════════════════════════════
+// MÚSICA
+// ══════════════════════════════════════════
+function playMusic(){
+  const ac = new (window.AudioContext||window.webkitAudioContext)();
+  const master = ac.createGain();
+  master.gain.setValueAtTime(0, ac.currentTime);
+  master.gain.linearRampToValueAtTime(.16, ac.currentTime+3);
+  master.connect(ac.destination);
+  const rb = ac.createBuffer(2, ac.sampleRate*3, ac.sampleRate);
+  for(let c=0;c<2;c++){
+    const d=rb.getChannelData(c);
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+  }
+  const rev=ac.createConvolver(); rev.buffer=rb;
+  const rg=ac.createGain(); rg.gain.value=.32;
+  rev.connect(rg); rg.connect(master);
+  const sc2=[261.63,293.66,329.63,349.23,392,440,493.88,523.25];
+  const mel=[4,4,5,6,6,5,4,2,0,2,4,4,4,2,2,0,4,4,5,6,6,5,4,2,0,2,4,2,0,0,0,0];
+  const bpm=68, beat=60/bpm;
+  function note(f,t2,d){
+    const o=ac.createOscillator(),e=ac.createGain();
+    o.type='sine'; o.frequency.value=f;
+    e.gain.setValueAtTime(0,t2);
+    e.gain.linearRampToValueAtTime(.48,t2+.04);
+    e.gain.exponentialRampToValueAtTime(.001,t2+d*.88);
+    o.connect(e); e.connect(master); e.connect(rev); o.start(t2); o.stop(t2+d);
+  }
+  function pad(f,t2,d){
+    [1,1.5,2].forEach(h=>{
+      const o=ac.createOscillator(),e=ac.createGain();
+      o.type='sine'; o.frequency.value=f*h*.5;
+      e.gain.setValueAtTime(0,t2);
+      e.gain.linearRampToValueAtTime(.035/h,t2+.6);
+      e.gain.linearRampToValueAtTime(.025/h,t2+d-.6);
+      e.gain.linearRampToValueAtTime(0,t2+d);
+      o.connect(e); e.connect(rev); o.start(t2); o.stop(t2+d);
+    });
+  }
+  const ch=[[261.63,329.63,392],[246.94,311.13,369.99],[220,277.18,329.63],[261.63,329.63,392]];
+  function schedule(){
+    const now=ac.currentTime+.05;
+    mel.forEach((n,i)=>note(sc2[n],now+i*beat,beat*.83));
+    ch.forEach((c,i)=>c.forEach(f=>pad(f,now+i*beat*8,beat*8.5)));
+  }
+  schedule();
+  setInterval(schedule, mel.length*beat*1000);
+}
+
+// ══════════════════════════════════════════
+// SPARKLES AMBIENTE
+// ══════════════════════════════════════════
+function addSparkles(){
+  for(let i=0;i<22;i++){
+    const sp=document.createElement('div');
+    sp.className='sparkle';
+    const size=Math.random()*4+2;
+    const col=Math.random()>.5?'rgba(247,197,213,.9)':'rgba(212,168,83,.9)';
+    Object.assign(sp.style,{
+      width:size+'px', height:size+'px',
+      left:(8+Math.random()*84)+'%',
+      top:(22+Math.random()*55)+'%',
+      background:col, boxShadow:`0 0 ${size*2}px ${col}`,
+      '--sd2':(1.5+Math.random()*2.2)+'s',
+      '--sdel':(Math.random()*3.5)+'s',
+    });
+    document.body.appendChild(sp);
+  }
+}
+
+// ══════════════════════════════════════════
+// INICIO — click
+// ══════════════════════════════════════════
+document.getElementById('startBtn').addEventListener('click', function(){
+  this.classList.add('hidden');
+  setTimeout(()=>this.remove(), 900);
+
+  playMusic();
+  addSparkles();
+  document.getElementById('gemLabel').classList.add('show');
+
+  // Arrancar el trazado de Géminis
+  drawTime = 0;
+
+  const scene = document.getElementById('scene');
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const baseH = Math.min(vh * .40, 230);
+
+  flowerDefs.forEach((fd, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'flower-wrap';
+    const stemH  = Math.round(baseH * fd.sc);
+    const totalH = (stemH + 150) * fd.sc;
+    const ww     = 130 * fd.sc;
+    const xPx    = fd.xp * vw - ww/2;
+    wrap.style.cssText = `
+      left:${xPx}px;width:${ww}px;height:${totalH}px;
+      --gl:${fd.dl}s;--gd:${fd.gd}s;
+      --sb:${fd.sb};--sp:${fd.sp};--sd:${fd.sd}s;
+      --ss:${fd.dl+fd.gd-.15}s;
+    `;
+    wrap.innerHTML = buildRose(i%4, stemH);
+    wrap.querySelector('svg').style.cssText = 'width:100%;height:100%;display:block;';
+    const pg = wrap.querySelector('.petal-group');
+    if(pg) pg.style.setProperty('--pd', (fd.dl + fd.gd*.6)+'s');
+    scene.appendChild(wrap);
+    requestAnimationFrame(() => wrap.classList.add('bloom'));
+  });
+});
+
+// ══════════════════════════════════════════
+// ARRANQUE
+// ══════════════════════════════════════════
+window.addEventListener('resize', resize);
+resize();
+requestAnimationFrame(drawFrame);
+</script>
+</body>
+</html>
